@@ -33,6 +33,10 @@ window/size/test_height=600
 window/stretch/mode="2d"
 window/stretch/aspect="expand"
 
+[editor_plugins]
+
+enabled=PoolStringArray(  )
+
 [gui]
 
 theme/custom_font="res://assets/fonts/BitPotion.tres"

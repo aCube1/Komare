@@ -261,3 +261,10 @@ shape = SubResource( 23 )
 
 [node name="Controller" type="Node" parent="."]
 script = ExtResource( 5 )
+
+[node name="Label" type="Label" parent="."]
+margin_left = -8.0
+margin_top = -26.0
+margin_right = 32.0
+margin_bottom = -12.0
+text = "00"
