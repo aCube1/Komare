@@ -4,6 +4,9 @@ onready var popup = $Popup
 onready var label = $Popup/Label
 onready var timer = $Timer
 
+func _ready() -> void:
+	toggle_overlay() # Activate the overlay on startup
+
 func _unhandled_key_input(event: InputEventKey) -> void:
 	if event.pressed:
 		match event.scancode:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=2]
+[gd_scene load_steps=45 format=2]
 
 [ext_resource path="res://assets/character/idle.png" type="Texture" id=1]
 [ext_resource path="res://assets/character/fall.png" type="Texture" id=2]
@@ -97,6 +97,7 @@ animations = [ {
 [sub_resource type="Animation" id=19]
 resource_name = "Fall"
 length = 0.2
+loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:animation")
 tracks/0/interp = 1
@@ -125,6 +126,7 @@ tracks/1/keys = {
 [sub_resource type="Animation" id=6]
 resource_name = "Idle"
 length = 0.3
+loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:animation")
 tracks/0/interp = 1
@@ -153,6 +155,7 @@ tracks/1/keys = {
 [sub_resource type="Animation" id=20]
 resource_name = "Jump"
 length = 0.2
+loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:animation")
 tracks/0/interp = 1
@@ -208,6 +211,7 @@ tracks/1/keys = {
 [sub_resource type="Animation" id=22]
 resource_name = "Walk"
 length = 0.5
+loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:animation")
 tracks/0/interp = 1
@@ -233,6 +237,54 @@ tracks/1/keys = {
 "values": [ 0, 1, 2, 3, 4, 5 ]
 }
 
+[sub_resource type="AnimationNodeAnimation" id=24]
+animation = "Fall"
+
+[sub_resource type="AnimationNodeAnimation" id=25]
+animation = "Idle"
+
+[sub_resource type="AnimationNodeAnimation" id=26]
+animation = "Jump"
+
+[sub_resource type="AnimationNodeAnimation" id=27]
+animation = "Walk"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=28]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=29]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=30]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=31]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=32]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=33]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=34]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=35]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=36]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id=37]
+states/Fall/node = SubResource( 24 )
+states/Fall/position = Vector2( 439.115, 89.9666 )
+states/Idle/node = SubResource( 25 )
+states/Idle/position = Vector2( 273.37, 88.9369 )
+states/Jump/node = SubResource( 26 )
+states/Jump/position = Vector2( 437.781, 197.062 )
+states/Walk/node = SubResource( 27 )
+states/Walk/position = Vector2( 148.444, 196.667 )
+transitions = [ "Idle", "Fall", SubResource( 28 ), "Fall", "Idle", SubResource( 29 ), "Idle", "Walk", SubResource( 30 ), "Walk", "Idle", SubResource( 31 ), "Idle", "Jump", SubResource( 32 ), "Jump", "Idle", SubResource( 33 ), "Walk", "Jump", SubResource( 34 ), "Jump", "Walk", SubResource( 35 ), "Jump", "Fall", SubResource( 36 ) ]
+start_node = "Idle"
+graph_offset = Vector2( -282, 21.0909 )
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=38]
+
 [sub_resource type="RectangleShape2D" id=23]
 extents = Vector2( 4, 8 )
 
@@ -249,12 +301,17 @@ animation = "Idle"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 root_node = NodePath("../AnimatedSprite")
-autoplay = "Idle"
 anims/Fall = SubResource( 19 )
 anims/Idle = SubResource( 6 )
 anims/Jump = SubResource( 20 )
 anims/RESET = SubResource( 21 )
 anims/Walk = SubResource( 22 )
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = SubResource( 37 )
+anim_player = NodePath("../AnimationPlayer")
+active = true
+parameters/playback = SubResource( 38 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 23 )
@@ -265,6 +322,6 @@ script = ExtResource( 5 )
 [node name="Label" type="Label" parent="."]
 margin_left = -8.0
 margin_top = -26.0
-margin_right = 32.0
+margin_right = 2.0
 margin_bottom = -12.0
 text = "00"

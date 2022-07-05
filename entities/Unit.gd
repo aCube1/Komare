@@ -19,8 +19,13 @@ func walk(delta: float, motion: int, acceleration: float, max_speed: float) -> v
 	velocity.x += acceleration * motion * delta
 	velocity.x = clamp(velocity.x, -max_speed, max_speed)
 
+	velocity = move_and_slide_with_snap(velocity, snap, Vector2.UP)
+
 func jump(impulse: float) -> void:
 	velocity.y = -impulse
+
+func cut_jump() -> void:
+	velocity.y -= velocity.y / 2
 
 func apply_gravity(delta: float) -> void:
 	velocity.y += current_gravity * delta
@@ -33,7 +38,11 @@ func set_gravity(gravity: float) -> void:
 
 ### SPRITE AND ANIMATION ###
 func play_animation(name: String) -> void:
-	if $AnimationPlayer != null and $AnimationPlayer.current_animation != name:
+	if $AnimationTree != null:
+		var state_machine = $AnimationTree.get("parameters/playback")
+		if state_machine is AnimationNodeStateMachinePlayback:
+			state_machine.travel(name)
+	elif $AnimationPlayer != null and $AnimationPlayer.current_animation != name:
 		$AnimationPlayer.play(name)
 
 func flip_h(flip: bool) -> void:
