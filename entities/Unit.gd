@@ -10,10 +10,6 @@ var velocity := Vector2.ZERO
 
 onready var current_gravity: float setget set_gravity
 
-### DEBUG ONLY ###
-func set_label(text: String) -> void:
-	$Label.text = text
-
 ### MOVEMENT ###
 func walk(delta: float, motion: int, acceleration: float, max_speed: float) -> void:
 	velocity.x += acceleration * motion * delta
@@ -39,7 +35,7 @@ func set_gravity(gravity: float) -> void:
 ### SPRITE AND ANIMATION ###
 func play_animation(name: String) -> void:
 	if $AnimationTree != null:
-		var state_machine = $AnimationTree.get("parameters/playback")
+		var state_machine = $AnimationTree["parameters/playback"]
 		if state_machine is AnimationNodeStateMachinePlayback:
 			state_machine.travel(name)
 	elif $AnimationPlayer != null and $AnimationPlayer.current_animation != name:

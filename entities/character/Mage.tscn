@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=2]
+[gd_scene load_steps=47 format=2]
 
 [ext_resource path="res://assets/character/idle.png" type="Texture" id=1]
 [ext_resource path="res://assets/character/fall.png" type="Texture" id=2]
@@ -125,7 +125,7 @@ tracks/1/keys = {
 
 [sub_resource type="Animation" id=6]
 resource_name = "Idle"
-length = 0.3
+length = 0.6
 loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:animation")
@@ -146,7 +146,7 @@ tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0, 0.1, 0.2, 0.3 ),
+"times": PoolRealArray( 0, 0.2, 0.4, 0.6 ),
 "transitions": PoolRealArray( 1, 1, 1, 1 ),
 "update": 1,
 "values": [ 0, 1, 2, 3 ]
@@ -249,20 +249,9 @@ animation = "Jump"
 [sub_resource type="AnimationNodeAnimation" id=27]
 animation = "Walk"
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=28]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=29]
-
 [sub_resource type="AnimationNodeStateMachineTransition" id=30]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=31]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=32]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=33]
-switch_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=34]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=35]
 switch_mode = 2
@@ -270,18 +259,32 @@ switch_mode = 2
 [sub_resource type="AnimationNodeStateMachineTransition" id=36]
 switch_mode = 2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id=39]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=46]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=47]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=48]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=49]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=50]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=51]
+
 [sub_resource type="AnimationNodeStateMachine" id=37]
 states/Fall/node = SubResource( 24 )
-states/Fall/position = Vector2( 439.115, 89.9666 )
+states/Fall/position = Vector2( -295.018, 379.98 )
 states/Idle/node = SubResource( 25 )
-states/Idle/position = Vector2( 273.37, 88.9369 )
+states/Idle/position = Vector2( -296.63, 264.48 )
 states/Jump/node = SubResource( 26 )
-states/Jump/position = Vector2( 437.781, 197.062 )
+states/Jump/position = Vector2( 101.225, 169.425 )
 states/Walk/node = SubResource( 27 )
-states/Walk/position = Vector2( 148.444, 196.667 )
-transitions = [ "Idle", "Fall", SubResource( 28 ), "Fall", "Idle", SubResource( 29 ), "Idle", "Walk", SubResource( 30 ), "Walk", "Idle", SubResource( 31 ), "Idle", "Jump", SubResource( 32 ), "Jump", "Idle", SubResource( 33 ), "Walk", "Jump", SubResource( 34 ), "Jump", "Walk", SubResource( 35 ), "Jump", "Fall", SubResource( 36 ) ]
+states/Walk/position = Vector2( 101.671, 393.399 )
+transitions = [ "Idle", "Walk", SubResource( 30 ), "Walk", "Idle", SubResource( 31 ), "Jump", "Walk", SubResource( 35 ), "Jump", "Fall", SubResource( 36 ), "Walk", "Fall", SubResource( 39 ), "Idle", "Fall", SubResource( 46 ), "Walk", "Jump", SubResource( 47 ), "Idle", "Jump", SubResource( 48 ), "Jump", "Idle", SubResource( 49 ), "Fall", "Idle", SubResource( 50 ), "Fall", "Walk", SubResource( 51 ) ]
 start_node = "Idle"
-graph_offset = Vector2( -282, 21.0909 )
+graph_offset = Vector2( -627, 142.091 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=38]
 
@@ -318,10 +321,7 @@ shape = SubResource( 23 )
 
 [node name="Controller" type="Node" parent="."]
 script = ExtResource( 5 )
-
-[node name="Label" type="Label" parent="."]
-margin_left = -8.0
-margin_top = -26.0
-margin_right = 2.0
-margin_bottom = -12.0
-text = "00"
+jump_height = 64
+jump_distance = 96
+ascent_time = 0.5
+descent_time = 0.4
