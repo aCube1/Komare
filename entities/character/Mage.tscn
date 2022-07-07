@@ -1,4 +1,4 @@
-[gd_scene load_steps=47 format=2]
+[gd_scene load_steps=45 format=2]
 
 [ext_resource path="res://assets/character/idle.png" type="Texture" id=1]
 [ext_resource path="res://assets/character/fall.png" type="Texture" id=2]
@@ -253,9 +253,6 @@ animation = "Walk"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=31]
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=35]
-switch_mode = 2
-
 [sub_resource type="AnimationNodeStateMachineTransition" id=36]
 switch_mode = 2
 
@@ -267,24 +264,23 @@ switch_mode = 2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=48]
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=49]
-
 [sub_resource type="AnimationNodeStateMachineTransition" id=50]
+switch_mode = 2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=51]
 
 [sub_resource type="AnimationNodeStateMachine" id=37]
 states/Fall/node = SubResource( 24 )
-states/Fall/position = Vector2( -295.018, 379.98 )
+states/Fall/position = Vector2( 25.342, 373.721 )
 states/Idle/node = SubResource( 25 )
-states/Idle/position = Vector2( -296.63, 264.48 )
+states/Idle/position = Vector2( -356.712, 372.542 )
 states/Jump/node = SubResource( 26 )
-states/Jump/position = Vector2( 101.225, 169.425 )
+states/Jump/position = Vector2( -182.8, 545.532 )
 states/Walk/node = SubResource( 27 )
-states/Walk/position = Vector2( 101.671, 393.399 )
-transitions = [ "Idle", "Walk", SubResource( 30 ), "Walk", "Idle", SubResource( 31 ), "Jump", "Walk", SubResource( 35 ), "Jump", "Fall", SubResource( 36 ), "Walk", "Fall", SubResource( 39 ), "Idle", "Fall", SubResource( 46 ), "Walk", "Jump", SubResource( 47 ), "Idle", "Jump", SubResource( 48 ), "Jump", "Idle", SubResource( 49 ), "Fall", "Idle", SubResource( 50 ), "Fall", "Walk", SubResource( 51 ) ]
+states/Walk/position = Vector2( -182.368, 433.881 )
+transitions = [ "Idle", "Walk", SubResource( 30 ), "Walk", "Idle", SubResource( 31 ), "Jump", "Fall", SubResource( 36 ), "Walk", "Fall", SubResource( 39 ), "Idle", "Fall", SubResource( 46 ), "Walk", "Jump", SubResource( 47 ), "Idle", "Jump", SubResource( 48 ), "Fall", "Idle", SubResource( 50 ), "Fall", "Walk", SubResource( 51 ) ]
 start_node = "Idle"
-graph_offset = Vector2( -627, 142.091 )
+graph_offset = Vector2( -680, 336.547 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=38]
 
@@ -321,7 +317,18 @@ shape = SubResource( 23 )
 
 [node name="Controller" type="Node" parent="."]
 script = ExtResource( 5 )
-jump_height = 64
+slip_friction = 32.0
+ground_friction = 24.0
+air_friction = 8.0
 jump_distance = 96
+jump_height = 64
 ascent_time = 0.5
 descent_time = 0.4
+max_coyote_time = 0.07
+
+[node name="Label" type="Label" parent="."]
+margin_left = -4.0
+margin_top = -27.0
+margin_right = 6.0
+margin_bottom = -19.0
+text = "00"

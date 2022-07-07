@@ -7,14 +7,20 @@ enum {
 
 var snap := Vector2.ZERO
 var velocity := Vector2.ZERO
+var was_on_floor := false
 
 onready var current_gravity: float setget set_gravity
 
+### DEBUG ONLY ###
+func set_label(text: String) -> void:
+	$Label.text = text
+
 ### MOVEMENT ###
-func walk(delta: float, motion: int, acceleration: float, max_speed: float) -> void:
+func move(delta: float, motion: int, acceleration: float, max_speed: float) -> void:
 	velocity.x += acceleration * motion * delta
 	velocity.x = clamp(velocity.x, -max_speed, max_speed)
 
+	was_on_floor = is_on_floor() # Check if the Unit is on floor before apply next movement
 	velocity = move_and_slide_with_snap(velocity, snap, Vector2.UP)
 
 func jump(impulse: float) -> void:

@@ -7,19 +7,20 @@ enum {
 	STATE_JUMP,
 }
 
-export(float) var slip_friction := 32.0
-export(float) var ground_friction := 24.0
-export(float) var air_friction := 8.0
+export(float) var slip_friction
+export(float) var ground_friction
+export(float) var air_friction
 
-export(int) var jump_height
 export(int) var jump_distance
+export(int) var jump_height
 export(float) var ascent_time # Time to reach jump peak
 export(float) var descent_time # Time to fall
+export(float) var max_coyote_time
 
 var current_state := STATE_IDLE
-var last_state := current_state
 var motion := 0
 var last_motion := 0
+var coyote_timer := 0.0
 
 onready var parent: KinematicBody2D = get_parent()
 
@@ -30,45 +31,64 @@ onready var jump_impulse: float = (jump_height * 2.0) / ascent_time
 onready var max_speed: float = sqrt(jump_distance * jump_impulse)
 onready var acceleration := max_speed * 2.0
 
-func _process(_delta: float) -> void:
+#func _ready() -> void:
+#	coyote_timer.one_shot = true
+#	add_child(coyote_timer)
+
+func _process(delta: float) -> void:
 	if Input.is_action_pressed("Right"):
 		motion += 1
 		parent.flip_h(false)
-		set_state(STATE_WALK)
 	if Input.is_action_pressed("Left"):
 		motion -= 1
 		parent.flip_h(true)
-		set_state(STATE_WALK)
-
-	if motion == 0 or parent.is_on_wall():
-		set_state(STATE_IDLE)
-	if parent.velocity.y > 0.0:
-		set_state(STATE_FALL)
 
 	# If the Unit is on those states, he can jump
 	if Input.is_action_just_pressed("Jump"):
 		if [STATE_IDLE, STATE_WALK].has(current_state):
-				set_state(STATE_JUMP)
+				parent.jump(jump_impulse)
 
 	# If Jump is released, cut the jump height
 	if Input.is_action_just_released("Jump"):
 		parent.cut_jump()
 
+	if coyote_timer >= 0.0:
+		coyote_timer -= delta
+
 func _physics_process(delta: float) -> void:
+	if motion == 0 or parent.is_on_wall():
+		set_state(STATE_IDLE)
+	else:
+		set_state(STATE_WALK)
+
+	if parent.velocity.y > 0.0:
+		if not parent.is_on_floor() and parent.was_on_floor:
+			coyote_timer = max_coyote_time
+			parent.velocity.y = 0.0 # Remove the remainder gravity of the parent
+		else:
+			set_state(STATE_FALL)
+	if parent.velocity.y < 0.0:
+		set_state(STATE_JUMP)
+		coyote_timer = 0.0 # Stop the coyote timer, the parent already jumped
+
+	parent.set_label("%s" %  ["idle", "walk", "fall", "jump"][current_state])
 	check_state(delta)
 
 	parent.set_gravity(get_gravity())
-	parent.apply_gravity(delta)
-	parent.walk(delta, motion, acceleration, max_speed)
+	if coyote_timer <= 0.0:
+		parent.apply_gravity(delta)
+
+	parent.move(delta, motion, acceleration, max_speed)
 	motion = 0
+
 
 func check_state(delta: float) -> void:
 	match current_state:
 		STATE_IDLE:
-			if parent.is_on_floor():
-				parent.apply_friction(delta, ground_friction)
-			else:
+			if parent.velocity.y > 0.0:
 				parent.apply_friction(delta, air_friction)
+			else:
+				parent.apply_friction(delta, ground_friction)
 			parent.play_animation("Idle")
 		STATE_WALK:
 			if last_motion != motion:
@@ -80,7 +100,6 @@ func check_state(delta: float) -> void:
 			parent.play_animation("Fall")
 		STATE_JUMP:
 			parent.set_snap(parent.NO_SNAP)
-			parent.jump(jump_impulse)
 			parent.play_animation("Jump")
 
 func get_gravity() -> float:
@@ -88,5 +107,4 @@ func get_gravity() -> float:
 
 func set_state(next: int) -> void:
 	if next != current_state:
-		last_state = current_state
 		current_state = next
