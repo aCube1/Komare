@@ -16,11 +16,13 @@ export(int) var jump_height
 export(float) var ascent_time # Time to reach jump peak
 export(float) var descent_time # Time to fall
 export(float) var max_coyote_time
+export(float) var max_jumpbuffer_time
 
 var current_state := STATE_IDLE
 var motion := 0
 var last_motion := 0
 var coyote_timer := 0.0
+var jumpbuffer_timer := 0.0
 
 onready var parent: KinematicBody2D = get_parent()
 
@@ -31,10 +33,6 @@ onready var jump_impulse: float = (jump_height * 2.0) / ascent_time
 onready var max_speed: float = sqrt(jump_distance * jump_impulse)
 onready var acceleration := max_speed * 2.0
 
-#func _ready() -> void:
-#	coyote_timer.one_shot = true
-#	add_child(coyote_timer)
-
 func _process(delta: float) -> void:
 	if Input.is_action_pressed("Right"):
 		motion += 1
@@ -43,17 +41,22 @@ func _process(delta: float) -> void:
 		motion -= 1
 		parent.flip_h(true)
 
-	# If the Unit is on those states, he can jump
-	if Input.is_action_just_pressed("Jump"):
+	if Input.is_action_just_pressed("Jump") or jumpbuffer_timer > 0.0:
+		# If the Unit is on those states, he can jump
 		if [STATE_IDLE, STATE_WALK].has(current_state):
-				parent.jump(jump_impulse)
+			parent.jump(jump_impulse)
+			jumpbuffer_timer = 0.0 # Reset the jumpbuffer timer, the Unit jumped
+		elif jumpbuffer_timer <= 0.0:
+			jumpbuffer_timer = max_jumpbuffer_time # Start the jumpbuffer timer
 
 	# If Jump is released, cut the jump height
 	if Input.is_action_just_released("Jump"):
 		parent.cut_jump()
 
-	if coyote_timer >= 0.0:
+	if coyote_timer > 0.0:
 		coyote_timer -= delta
+	if jumpbuffer_timer > 0.0:
+		jumpbuffer_timer -= delta
 
 func _physics_process(delta: float) -> void:
 	if motion == 0 or parent.is_on_wall():
@@ -64,12 +67,12 @@ func _physics_process(delta: float) -> void:
 	if parent.velocity.y > 0.0:
 		if not parent.is_on_floor() and parent.was_on_floor:
 			coyote_timer = max_coyote_time
-			parent.velocity.y = 0.0 # Remove the remainder gravity of the parent
+			parent.velocity.y = 0.0 # Remove the remainder gravity of the Unit
 		else:
 			set_state(STATE_FALL)
 	if parent.velocity.y < 0.0:
 		set_state(STATE_JUMP)
-		coyote_timer = 0.0 # Stop the coyote timer, the parent already jumped
+		coyote_timer = 0.0 # Stop the coyote timer, the Unit already jumped
 
 	parent.set_label("%s" %  ["idle", "walk", "fall", "jump"][current_state])
 	check_state(delta)
@@ -80,7 +83,6 @@ func _physics_process(delta: float) -> void:
 
 	parent.move(delta, motion, acceleration, max_speed)
 	motion = 0
-
 
 func check_state(delta: float) -> void:
 	match current_state:

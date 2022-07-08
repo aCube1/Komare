@@ -325,6 +325,7 @@ jump_height = 64
 ascent_time = 0.5
 descent_time = 0.4
 max_coyote_time = 0.07
+max_jumpbuffer_time = 0.1
 
 [node name="Label" type="Label" parent="."]
 margin_left = -4.0
