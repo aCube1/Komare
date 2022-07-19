@@ -1,10 +1,10 @@
-[gd_scene load_steps=45 format=2]
+[gd_scene load_steps=44 format=2]
 
 [ext_resource path="res://assets/character/idle.png" type="Texture" id=1]
 [ext_resource path="res://assets/character/fall.png" type="Texture" id=2]
-[ext_resource path="res://assets/character/run.png" type="Texture" id=3]
+[ext_resource path="res://assets/character/walk.png" type="Texture" id=3]
 [ext_resource path="res://assets/character/jump.png" type="Texture" id=4]
-[ext_resource path="res://entities/controllers/PlayerController.gd" type="Script" id=5]
+[ext_resource path="res://entities/controllers/Player.gd" type="Script" id=5]
 [ext_resource path="res://entities/Unit.gd" type="Script" id=6]
 
 [sub_resource type="AtlasTexture" id=7]
@@ -75,7 +75,7 @@ region = Rect2( 32, 0, 16, 16 )
 animations = [ {
 "frames": [ SubResource( 7 ), SubResource( 8 ), SubResource( 9 ), SubResource( 10 ), SubResource( 11 ), SubResource( 12 ) ],
 "loop": true,
-"name": "Run",
+"name": "Walk",
 "speed": 5.0
 }, {
 "frames": [ SubResource( 1 ), SubResource( 2 ), SubResource( 3 ), SubResource( 4 ) ],
@@ -222,7 +222,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 1,
-"values": [ "Run" ]
+"values": [ "Walk" ]
 }
 tracks/1/type = "value"
 tracks/1/path = NodePath(".:frame")
@@ -260,31 +260,28 @@ switch_mode = 2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=46]
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=47]
+[sub_resource type="AnimationNodeStateMachineTransition" id=53]
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=48]
+[sub_resource type="AnimationNodeStateMachineTransition" id=54]
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=50]
-switch_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=51]
+[sub_resource type="AnimationNodeStateMachineTransition" id=55]
 
 [sub_resource type="AnimationNodeStateMachine" id=37]
 states/Fall/node = SubResource( 24 )
-states/Fall/position = Vector2( 25.342, 373.721 )
+states/Fall/position = Vector2( 34.0148, 490.975 )
 states/Idle/node = SubResource( 25 )
-states/Idle/position = Vector2( -356.712, 372.542 )
+states/Idle/position = Vector2( -356.257, 618.6 )
 states/Jump/node = SubResource( 26 )
-states/Jump/position = Vector2( -182.8, 545.532 )
+states/Jump/position = Vector2( 34.0034, 617.19 )
 states/Walk/node = SubResource( 27 )
-states/Walk/position = Vector2( -182.368, 433.881 )
-transitions = [ "Idle", "Walk", SubResource( 30 ), "Walk", "Idle", SubResource( 31 ), "Jump", "Fall", SubResource( 36 ), "Walk", "Fall", SubResource( 39 ), "Idle", "Fall", SubResource( 46 ), "Walk", "Jump", SubResource( 47 ), "Idle", "Jump", SubResource( 48 ), "Fall", "Idle", SubResource( 50 ), "Fall", "Walk", SubResource( 51 ) ]
+states/Walk/position = Vector2( -356.604, 491.214 )
+transitions = [ "Idle", "Walk", SubResource( 30 ), "Walk", "Idle", SubResource( 31 ), "Jump", "Fall", SubResource( 36 ), "Walk", "Fall", SubResource( 39 ), "Idle", "Fall", SubResource( 46 ), "Walk", "Jump", SubResource( 53 ), "Fall", "Idle", SubResource( 54 ), "Fall", "Walk", SubResource( 55 ) ]
 start_node = "Idle"
-graph_offset = Vector2( -680, 336.547 )
+graph_offset = Vector2( -587, 395.547 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=38]
 
-[sub_resource type="RectangleShape2D" id=23]
+[sub_resource type="RectangleShape2D" id=52]
 extents = Vector2( 4, 8 )
 
 [node name="Mage" type="KinematicBody2D"]
@@ -298,38 +295,39 @@ __meta__ = {
 frames = SubResource( 5 )
 animation = "Idle"
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-root_node = NodePath("../AnimatedSprite")
+[node name="Player" type="AnimationPlayer" parent="AnimatedSprite"]
 anims/Fall = SubResource( 19 )
 anims/Idle = SubResource( 6 )
 anims/Jump = SubResource( 20 )
 anims/RESET = SubResource( 21 )
 anims/Walk = SubResource( 22 )
 
-[node name="AnimationTree" type="AnimationTree" parent="."]
+[node name="Tree" type="AnimationTree" parent="AnimatedSprite"]
 tree_root = SubResource( 37 )
-anim_player = NodePath("../AnimationPlayer")
+anim_player = NodePath("../Player")
 active = true
 parameters/playback = SubResource( 38 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource( 23 )
+shape = SubResource( 52 )
 
 [node name="Controller" type="Node" parent="."]
 script = ExtResource( 5 )
-slip_friction = 32.0
-ground_friction = 24.0
-air_friction = 8.0
-jump_distance = 96
-jump_height = 64
+max_speed = 150.0
+ground_accel_time = 0.8
+air_accel_time = 1.0
+stop_friction = 0.35
+slip_friction = 0.2
+jump_height = 56
 ascent_time = 0.5
 descent_time = 0.4
 max_coyote_time = 0.07
-max_jumpbuffer_time = 0.1
+max_jumpbuffer_time = 0.08
+max_gravity = 400.0
 
 [node name="Label" type="Label" parent="."]
-margin_left = -4.0
-margin_top = -27.0
-margin_right = 6.0
-margin_bottom = -19.0
+margin_left = -5.0
+margin_top = -20.0
+margin_right = 5.0
+margin_bottom = -12.0
 text = "00"

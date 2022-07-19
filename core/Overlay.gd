@@ -26,11 +26,13 @@ func update_overlay() -> void:
 	label.text = """Vsync Enabled: %s
 		FPS: %d
 		DT: %fs
+		DT Physics: %fs
 		DrawCalls: %d
 	""" % [
 		OS.is_vsync_enabled(),
 		Engine.get_frames_per_second(),
 		Performance.get_monitor(Performance.TIME_PROCESS),
+		Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS),
 		Performance.get_monitor(Performance.RENDER_2D_DRAW_CALLS_IN_FRAME),
 	]
 	popup.rect_size = label.rect_size

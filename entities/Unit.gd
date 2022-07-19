@@ -1,4 +1,5 @@
 extends KinematicBody2D
+class_name Unit
 
 enum {
 	DEFAULT_SNAP,
@@ -10,6 +11,9 @@ var velocity := Vector2.ZERO
 var was_on_floor := false
 
 onready var current_gravity: float setget set_gravity
+
+func _ready() -> void:
+	set_snap(DEFAULT_SNAP)
 
 ### DEBUG ONLY ###
 func set_label(text: String) -> void:
@@ -27,25 +31,34 @@ func jump(impulse: float) -> void:
 	velocity.y = -impulse
 
 func cut_jump() -> void:
-	velocity.y -= velocity.y / 2
+	velocity.y *= 0.5
 
-func apply_gravity(delta: float) -> void:
-	velocity.y += current_gravity * delta
+func apply_gravity(delta: float, max_gravity: float = 1000) -> void:
+	# Don't let the unit be an unstoppable meteor
+	velocity.y = min(velocity.y + current_gravity * delta, max_gravity)
 
-func apply_friction(delta: float, friction: float) -> void:
-	velocity.x = int(lerp(velocity.x, 0, friction * delta))
+func apply_friction(friction: float) -> void:
+	velocity.x = lerp(velocity.x, 0, friction)
 
 func set_gravity(gravity: float) -> void:
 	current_gravity = gravity
 
+func set_snap(option: int) -> void:
+	match option:
+		DEFAULT_SNAP:
+			snap = Vector2.DOWN * 8.0
+		NO_SNAP:
+			snap = Vector2.ZERO
+
 ### SPRITE AND ANIMATION ###
 func play_animation(name: String) -> void:
-	if $AnimationTree != null:
-		var state_machine = $AnimationTree["parameters/playback"]
+	if get_node_or_null("AnimatedSprite/Tree") != null:
+		var state_machine = $AnimatedSprite/Tree["parameters/playback"]
 		if state_machine is AnimationNodeStateMachinePlayback:
 			state_machine.travel(name)
-	elif $AnimationPlayer != null and $AnimationPlayer.current_animation != name:
-		$AnimationPlayer.play(name)
+	elif get_node_or_null("AnimatedSprite/Player") != null \
+	and $AnimatedSprite/Player.current_animation != name:
+		$AnimatedSprite/Player.play(name)
 
 func flip_h(flip: bool) -> void:
 	if $AnimatedSprite != null:
@@ -55,9 +68,3 @@ func flip_v(flip: bool) -> void:
 	if $AnimatedSprite != null:
 		$AnimatedSprite.flip_v = flip
 
-func set_snap(option: int) -> void:
-	match option:
-		DEFAULT_SNAP:
-			snap = Vector2.DOWN * 8.0
-		NO_SNAP:
-			snap = Vector2.ZERO
