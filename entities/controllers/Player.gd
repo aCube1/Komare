@@ -10,8 +10,8 @@ enum {
 export var max_speed: float
 export var ground_accel_time: float # Time to reach max speed
 export var air_accel_time: float # Time to reach max speed
-export(float, 0, 1) var stop_friction # Stop time percentage
-export(float, 0, 1) var slip_friction # Friction to change the motion
+export var stop_time: float # Time to stop
+export var slip_time: float # Friction to change the motion
 
 export var jump_height: int
 export var ascent_time: float # Time to reach jump peak
@@ -34,6 +34,11 @@ onready var jump_impulse: float = (jump_height * 2.0) / ascent_time
 onready var ground_acceleration := (max_speed * 2.0) / pow(ground_accel_time, 2)
 onready var air_acceleration := (max_speed * 2.0) / pow(air_accel_time, 2)
 
+onready var stop_desaceleration := (max_speed * -2.0) / pow(stop_time, 2)
+onready var slip_desaceleration := (max_speed * -2.0) / pow(slip_time, 2)
+
+onready var dust_animation: AnimatedSprite = unit.get_node("Container/Dust")
+
 func _process(delta: float) -> void:
 	if Input.is_action_pressed("Right"):
 		motion += 1
@@ -46,6 +51,7 @@ func _process(delta: float) -> void:
 		# If the Unit is on those states, he can jump
 		if [STATE_IDLE, STATE_WALK].has(current_state):
 			unit.jump(jump_impulse)
+			dust_animation.set_position(unit.position)
 			jumpbuffer_timer = 0.0 # Reset the jumpbuffer timer, the Unit jumped
 		elif jumpbuffer_timer <= 0.0:
 			jumpbuffer_timer = max_jumpbuffer_time # Start the jumpbuffer timer
@@ -61,7 +67,12 @@ func _process(delta: float) -> void:
 
 func _physics_process(delta: float) -> void:
 	### STATE MACHINE ###
-	if motion == 0 or unit.is_on_wall():
+	if [STATE_FALL].has(current_state) and unit.is_on_floor():
+		if motion == 0:
+			unit.set_velocity_x(0.0)
+		dust_animation.set_position(unit.position)
+
+	if is_zero_approx(unit.velocity.x) or unit.is_on_wall():
 		set_state(STATE_IDLE)
 	else:
 		set_state(STATE_WALK)
@@ -69,7 +80,7 @@ func _physics_process(delta: float) -> void:
 	if unit.velocity.y > 0.0:
 		if not unit.is_on_floor() and unit.was_on_floor:
 			coyote_timer = max_coyote_time
-			unit.velocity.y = 0.0 # Remove the remainder gravity of the Unit
+			unit.set_velocity_y(0.0) # Remove the remainder gravity of the Unit
 		else:
 			set_state(STATE_FALL)
 	elif unit.velocity.y < 0.0:
@@ -77,8 +88,7 @@ func _physics_process(delta: float) -> void:
 		coyote_timer = 0.0 # Stop the coyote timer, the Unit already jumped
 
 	### MOVEMENT ###
-	unit.set_label("%s" % get_acceleration())
-	check_state()
+	check_state(delta)
 
 	update_gravity()
 	if coyote_timer <= 0.0:
@@ -87,14 +97,14 @@ func _physics_process(delta: float) -> void:
 	unit.move(delta, motion, get_acceleration(), max_speed)
 	motion = 0
 
-func check_state() -> void:
+func check_state(delta: float) -> void:
 	match current_state:
 		STATE_IDLE:
-			unit.apply_friction(stop_friction)
+			unit.apply_friction(delta, stop_desaceleration)
 			unit.play_animation("Idle")
 		STATE_WALK:
 			if sign(unit.velocity.x) != motion:
-				unit.apply_friction(slip_friction)
+				unit.apply_friction(delta, slip_desaceleration)
 			unit.play_animation("Walk")
 		STATE_FALL:
 			unit.set_snap(unit.DEFAULT_SNAP)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=2]
+[gd_scene load_steps=69 format=2]
 
 [ext_resource path="res://assets/character/idle.png" type="Texture" id=1]
 [ext_resource path="res://assets/character/fall.png" type="Texture" id=2]
@@ -6,6 +6,17 @@
 [ext_resource path="res://assets/character/jump.png" type="Texture" id=4]
 [ext_resource path="res://entities/controllers/Player.gd" type="Script" id=5]
 [ext_resource path="res://entities/Unit.gd" type="Script" id=6]
+[ext_resource path="res://assets/character/preparation.png" type="Texture" id=7]
+[ext_resource path="res://assets/misc/jump_dust.png" type="Texture" id=8]
+[ext_resource path="res://assets/misc/fall_dust.png" type="Texture" id=9]
+
+[sub_resource type="AtlasTexture" id=56]
+atlas = ExtResource( 7 )
+region = Rect2( 0, 0, 16, 16 )
+
+[sub_resource type="AtlasTexture" id=57]
+atlas = ExtResource( 7 )
+region = Rect2( 16, 0, 16, 16 )
 
 [sub_resource type="AtlasTexture" id=7]
 atlas = ExtResource( 3 )
@@ -73,6 +84,11 @@ region = Rect2( 32, 0, 16, 16 )
 
 [sub_resource type="SpriteFrames" id=5]
 animations = [ {
+"frames": [ SubResource( 56 ), SubResource( 57 ) ],
+"loop": true,
+"name": "Preparation",
+"speed": 5.0
+}, {
 "frames": [ SubResource( 7 ), SubResource( 8 ), SubResource( 9 ), SubResource( 10 ), SubResource( 11 ), SubResource( 12 ) ],
 "loop": true,
 "name": "Walk",
@@ -93,6 +109,84 @@ animations = [ {
 "name": "Jump",
 "speed": 5.0
 } ]
+
+[sub_resource type="Animation" id=63]
+resource_name = "AfterFall"
+length = 0.1
+step = 0.05
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ "Preparation" ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.05 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 0, 1 ]
+}
+tracks/2/type = "animation"
+tracks/2/path = NodePath("../Container/Dust/Player")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"clips": PoolStringArray( "Fall" ),
+"times": PoolRealArray( 0 )
+}
+
+[sub_resource type="Animation" id=58]
+resource_name = "BeforeJump"
+length = 0.1
+step = 0.025
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ "Preparation" ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.05 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 1,
+"values": [ 1, 0 ]
+}
+tracks/2/type = "animation"
+tracks/2/path = NodePath("../Container/Dust/Player")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/keys = {
+"clips": PoolStringArray( "Jump" ),
+"times": PoolRealArray( 0 )
+}
 
 [sub_resource type="Animation" id=19]
 resource_name = "Fall"
@@ -237,6 +331,12 @@ tracks/1/keys = {
 "values": [ 0, 1, 2, 3, 4, 5 ]
 }
 
+[sub_resource type="AnimationNodeAnimation" id=64]
+animation = "AfterFall"
+
+[sub_resource type="AnimationNodeAnimation" id=59]
+animation = "BeforeJump"
+
 [sub_resource type="AnimationNodeAnimation" id=24]
 animation = "Fall"
 
@@ -256,33 +356,178 @@ animation = "Walk"
 [sub_resource type="AnimationNodeStateMachineTransition" id=36]
 switch_mode = 2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id=60]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=61]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=62]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=65]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=66]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=67]
+switch_mode = 2
+
 [sub_resource type="AnimationNodeStateMachineTransition" id=39]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=46]
 
-[sub_resource type="AnimationNodeStateMachineTransition" id=53]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=54]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id=55]
+[sub_resource type="AnimationNodeStateMachineTransition" id=68]
+switch_mode = 2
 
 [sub_resource type="AnimationNodeStateMachine" id=37]
+states/AfterFall/node = SubResource( 64 )
+states/AfterFall/position = Vector2( -177.054, 331.357 )
+states/BeforeJump/node = SubResource( 59 )
+states/BeforeJump/position = Vector2( -177.667, 582.602 )
 states/Fall/node = SubResource( 24 )
-states/Fall/position = Vector2( 34.0148, 490.975 )
+states/Fall/position = Vector2( 40.186, 488.592 )
 states/Idle/node = SubResource( 25 )
-states/Idle/position = Vector2( -356.257, 618.6 )
+states/Idle/position = Vector2( -433.101, 330.825 )
 states/Jump/node = SubResource( 26 )
-states/Jump/position = Vector2( 34.0034, 617.19 )
+states/Jump/position = Vector2( 40.8065, 583.714 )
 states/Walk/node = SubResource( 27 )
-states/Walk/position = Vector2( -356.604, 491.214 )
-transitions = [ "Idle", "Walk", SubResource( 30 ), "Walk", "Idle", SubResource( 31 ), "Jump", "Fall", SubResource( 36 ), "Walk", "Fall", SubResource( 39 ), "Idle", "Fall", SubResource( 46 ), "Walk", "Jump", SubResource( 53 ), "Fall", "Idle", SubResource( 54 ), "Fall", "Walk", SubResource( 55 ) ]
+states/Walk/position = Vector2( -433.5, 479.34 )
+transitions = [ "Idle", "Walk", SubResource( 30 ), "Walk", "Idle", SubResource( 31 ), "Jump", "Fall", SubResource( 36 ), "Walk", "BeforeJump", SubResource( 60 ), "BeforeJump", "Jump", SubResource( 61 ), "Idle", "BeforeJump", SubResource( 62 ), "Fall", "AfterFall", SubResource( 65 ), "AfterFall", "Idle", SubResource( 66 ), "AfterFall", "Walk", SubResource( 67 ), "Walk", "Fall", SubResource( 39 ), "Idle", "Fall", SubResource( 46 ), "AfterFall", "BeforeJump", SubResource( 68 ) ]
 start_node = "Idle"
-graph_offset = Vector2( -587, 395.547 )
+graph_offset = Vector2( -687, 298.75 )
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=38]
 
 [sub_resource type="RectangleShape2D" id=52]
 extents = Vector2( 4, 8 )
+
+[sub_resource type="AtlasTexture" id=69]
+atlas = ExtResource( 9 )
+region = Rect2( 0, 0, 16, 16 )
+
+[sub_resource type="AtlasTexture" id=70]
+atlas = ExtResource( 9 )
+region = Rect2( 16, 0, 16, 16 )
+
+[sub_resource type="AtlasTexture" id=71]
+atlas = ExtResource( 9 )
+region = Rect2( 32, 0, 16, 16 )
+
+[sub_resource type="AtlasTexture" id=72]
+atlas = ExtResource( 9 )
+region = Rect2( 48, 0, 16, 16 )
+
+[sub_resource type="AtlasTexture" id=73]
+atlas = ExtResource( 8 )
+region = Rect2( 0, 0, 16, 16 )
+
+[sub_resource type="AtlasTexture" id=74]
+atlas = ExtResource( 8 )
+region = Rect2( 16, 0, 16, 16 )
+
+[sub_resource type="AtlasTexture" id=75]
+atlas = ExtResource( 8 )
+region = Rect2( 32, 0, 16, 16 )
+
+[sub_resource type="AtlasTexture" id=76]
+atlas = ExtResource( 8 )
+region = Rect2( 48, 0, 16, 16 )
+
+[sub_resource type="SpriteFrames" id=77]
+animations = [ {
+"frames": [ SubResource( 69 ), SubResource( 70 ), SubResource( 71 ), SubResource( 72 ), null ],
+"loop": true,
+"name": "Fall",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 73 ), SubResource( 74 ), SubResource( 75 ), SubResource( 76 ), null ],
+"loop": true,
+"name": "Jump",
+"speed": 5.0
+} ]
+
+[sub_resource type="Animation" id=78]
+resource_name = "Fall"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ "Fall" ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2, 3, 4 ]
+}
+
+[sub_resource type="Animation" id=79]
+resource_name = "Jump"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ "Jump" ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2, 3, 4 ]
+}
+
+[sub_resource type="Animation" id=80]
+resource_name = "RESET"
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:animation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ "Jump" ]
+}
+tracks/1/type = "value"
+tracks/1/path = NodePath(".:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 0 ]
+}
 
 [node name="Mage" type="KinematicBody2D"]
 collision_layer = 2
@@ -290,12 +535,17 @@ script = ExtResource( 6 )
 __meta__ = {
 "_edit_group_": true
 }
+anim_sprite = NodePath("AnimatedSprite")
+anim_player = NodePath("AnimatedSprite/Player")
+anim_tree = NodePath("AnimatedSprite/Tree")
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 frames = SubResource( 5 )
 animation = "Idle"
 
 [node name="Player" type="AnimationPlayer" parent="AnimatedSprite"]
+anims/AfterFall = SubResource( 63 )
+anims/BeforeJump = SubResource( 58 )
 anims/Fall = SubResource( 19 )
 anims/Idle = SubResource( 6 )
 anims/Jump = SubResource( 20 )
@@ -308,7 +558,7 @@ anim_player = NodePath("../Player")
 active = true
 parameters/playback = SubResource( 38 )
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
 shape = SubResource( 52 )
 
 [node name="Controller" type="Node" parent="."]
@@ -316,8 +566,8 @@ script = ExtResource( 5 )
 max_speed = 150.0
 ground_accel_time = 0.8
 air_accel_time = 1.0
-stop_friction = 0.35
-slip_friction = 0.2
+stop_time = 0.6
+slip_time = 0.8
 jump_height = 56
 ascent_time = 0.5
 descent_time = 0.4
@@ -325,9 +575,13 @@ max_coyote_time = 0.07
 max_jumpbuffer_time = 0.08
 max_gravity = 400.0
 
-[node name="Label" type="Label" parent="."]
-margin_left = -5.0
-margin_top = -20.0
-margin_right = 5.0
-margin_bottom = -12.0
-text = "00"
+[node name="Container" type="Node" parent="."]
+
+[node name="Dust" type="AnimatedSprite" parent="Container"]
+frames = SubResource( 77 )
+animation = "Jump"
+
+[node name="Player" type="AnimationPlayer" parent="Container/Dust"]
+anims/Fall = SubResource( 78 )
+anims/Jump = SubResource( 79 )
+anims/RESET = SubResource( 80 )

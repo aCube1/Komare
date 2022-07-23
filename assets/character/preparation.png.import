@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/jump-fall-dust.png-b3d0f9765389b4a9d4c1fae6d9aeac35.stex"
+path="res://.import/preparation.png-97a850383455f9ef5af02383c494ca11.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/character/jump-fall-dust.png"
-dest_files=[ "res://.import/jump-fall-dust.png-b3d0f9765389b4a9d4c1fae6d9aeac35.stex" ]
+source_file="res://assets/character/preparation.png"
+dest_files=[ "res://.import/preparation.png-97a850383455f9ef5af02383c494ca11.stex" ]
 
 [params]
 
